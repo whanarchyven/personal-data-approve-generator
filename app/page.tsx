@@ -59,6 +59,17 @@ function formatBirthDate(d?: Date | null): string {
   return format(d, "dd.MM.yyyy");
 }
 
+function calculateAge(birthDate?: Date | null): number | null {
+  if (!birthDate) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 function formatConsentDate(d?: Date | null): string {
   if (!d) return "";
   const day = format(d, "dd");
@@ -278,26 +289,63 @@ export default function Home() {
           <input type="file" accept=".xlsx,.xls,.json" onChange={onFileChange} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-6">
           <div>
-            <h2 className="font-medium mb-2">Сопровождающие ({escorts.length})</h2>
-            <ul className="space-y-1">
-              {escorts.map((p, i) => (
-                <li key={`e-${i}`} className="text-sm">
-                  {p.fullName}
-                </li>
-              ))}
-            </ul>
+            <h2 className="text-lg font-semibold mb-3">Сопровождающие ({escorts.length})</h2>
+            {escorts.length > 0 ? (
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Имя</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата рождения</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Телефон</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {escorts.map((p, i) => (
+                      <tr key={`e-${i}`} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-900">{p.fullName}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{formatBirthDate(p.birthDate) || "—"}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{p.tutorPhone || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 italic">Нет данных</p>
+            )}
           </div>
+
           <div>
-            <h2 className="font-medium mb-2">Дети ({children.length})</h2>
-            <ul className="space-y-1">
-              {children.map((p, i) => (
-                <li key={`c-${i}`} className="text-sm">
-                  {p.fullName} {p.tutorName ? `(представитель: ${p.tutorName})` : ""}
-                </li>
-              ))}
-            </ul>
+            <h2 className="text-lg font-semibold mb-3">Дети ({children.length})</h2>
+            {children.length > 0 ? (
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Имя</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Дата рождения</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Телефон</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Представитель</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {children.map((p, i) => (
+                      <tr key={`c-${i}`} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-900">{p.fullName}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{formatBirthDate(p.birthDate) || "—"}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{p.tutorPhone || "—"}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500">{p.tutorName || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 italic">Нет данных</p>
+            )}
           </div>
         </div>
 
